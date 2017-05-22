@@ -1,0 +1,78 @@
+#! /usr/bin/python2
+
+import netinfo
+import sys
+import os
+import argparse
+import getpass
+
+def get_default_gateways():
+	routes = netinfo.get_routes()
+	default_gateways = []
+	for route in routes:
+		if route['gateway'] != '0.0.0.0':
+			default_gateways.append(route['gateway'])
+	return default_gateways
+
+parser = argparse.ArgumentParser(description='Runs OpenVPN.')
+parser.add_argument('--show_proxy', action='store_true', help="Show last proxy used.")
+parser.add_argument('--no_proxy', action='store_true', help="Don't use proxy for connection.")
+parser.add_argument('--proxy', type=str, help="Proxy to use. It can be 'uh', 'local' or custom. You can leave it empty to reuse last one.")
+parser.add_argument('--proxy_port', type=str, default='3128', help="Port to connect on the proxy host. Defaults to 3128 when using 'http-proxy' and to 1080 when using 'socks-proxy'.")
+parser.add_argument('--proxy_type', type=str, default='http', choices=['http', 'socks'], help="Type of proxy to use.")
+parser.add_argument('--auth_file', type=str, default='/home/' + getpass.getuser() + '/.vpn/.vpnauth', help="Authentication file to use. Defaults to '/home/{current_user}/.vpn/.vpnauth'.")
+parser.add_argument('--config', type=str, default='/home/' + getpass.getuser() + '/.vpn/client.conf', help="The config file to use. Defaults to '/home/{current_user}/.vpn/client.conf'.")
+parser.add_argument('--gateways', type=str, nargs='+', default=get_default_gateways(), help='Gateways you want to keep (will override automatic detection).')
+args = parser.parse_args()
+
+with open(args.config) as f:
+	lines = f.readlines()
+
+routes = int(lines[-1].split(';')[1]) #how many routes were added last time
+
+if args.show_proxy:
+	print(lines[-1 * routes - 2]) #the proxy line is above the routes added last time
+else:
+	if args.no_proxy:
+		args.proxy_type = ";"
+		args.proxy = "Not using proxy"
+		args.proxy_port = ''
+		args.auth_file = ''
+	elif args.proxy == 'uh':
+		args.proxy = '10.6.100.71'
+	elif args.proxy == 'local':
+		args.proxy_type = 'socks-proxy'
+		args.proxy = '127.0.0.1'
+		args.proxy_port = '1080'
+		args.auth_file = ';'
+
+	if args.proxy_type == 'http':
+		args.proxy_type = 'http-proxy'
+		if args.proxy_port == None:
+			args.proxy_port = "3128"
+	elif args.proxy_type == 'socks':
+		args.proxy_type = 'socks-proxy'
+		if args.proxy_port == None:
+			args.proxy_port = "1080"
+
+	for i in range(0, routes + 1): #erase routes added last time
+			lines.pop()
+	if args.proxy != None:
+		proxy_line = args.proxy_type + " " + args.proxy + " " + args.proxy_port + " " + args.auth_file + "\n" 
+		lines[-1] = proxy_line
+	print("Proxy line: " + lines[-1])
+	print("Adding routes...")
+	for gateway in args.gateways:
+		splitted = gateway.split('.')
+		route_line = "route " + splitted[0] + ".0.0.0 " + "255.0.0.0 " + gateway + "\n"
+		lines.append(route_line)
+		print(route_line)
+	appended_line = ";" + str(len(args.gateways)) + ";Number of routes added."
+	print(appended_line)
+	print("")
+	lines.append(appended_line)
+
+	with open(args.config, 'w') as f:
+		for line in lines:
+			f.write(line)
+	os.system('sudo openvpn ' + args.config)

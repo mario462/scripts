@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ $# -lt 2 ]; then
+  echo "docker-remove WHAT PATTERN [FORCE]"
+else
+  WHAT=$1
+  PATTERN=$2
+  FORCE=$3
+  
+  if [ $WHAT = image ]; then
+    docker-filter $WHAT $PATTERN | awk -v FORCE=$FORCE -v WHAT=$WHAT '{ print "docker " WHAT " rm " FORCE " " $3 | "/bin/bash" }'
+  elif [ $WHAT = container ]; then
+    docker-filter $WHAT $PATTERN | awk -v FORCE=$FORCE -v WHAT=$WHAT '{ print "docker " WHAT " rm " FORCE " " $1 | "/bin/bash" }'
+  else
+    echo "Bad Usage. WHAT = { image, container }"
+  fi
+fi

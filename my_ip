@@ -1,0 +1,9 @@
+#!/bin/bash
+if [ $# -gt 0 ] && [ $1 == "eth" ]; then
+	ifconfig enp2s0f2 | grep "inet addr" 
+elif [ $# -gt 0 ] && [ $1 == "wlan" ]; then
+	ifconfig wlp3s0 | grep "inet addr" 
+else
+	curl wtfismyip.com/json
+	echo
+fi

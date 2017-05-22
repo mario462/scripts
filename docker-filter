@@ -1,0 +1,10 @@
+#!/bin/bash
+
+WHAT=$1
+PATTERN=$2
+
+if [ $WHAT = image ]; then
+  docker $WHAT ls | grep $PATTERN 
+else
+  docker $WHAT ls -a | grep $PATTERN 
+fi
