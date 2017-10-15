@@ -1,0 +1,35 @@
+#!/bin/bash
+list_path="/etc/apt/sources.list.d/additional-repositories.list"
+
+if [ $1 == "uh" ]; then
+	http_repo="http://ubuntu.uh.cu/ubuntu"
+	echo Using source $http_repo
+	echo deb $http_repo xenial main restricted universe multiverse > $list_path
+	echo deb $http_repo xenial-updates main restricted universe multiverse >> $list_path
+	echo deb $http_repo xenial-backports main restricted universe multiverse >> $list_path
+	echo deb $http_repo xenial-security main restricted universe multiverse >> $list_path
+elif [ $1 == "local" ]; then
+	local_repo="file:///home/mario/repo"
+	echo Using source $local_repo
+	echo deb $local_repo xenial main restricted universe multiverse > $list_path
+	echo deb $local_repo xenial-updates main restricted universe multiverse >> $list_path
+	echo deb $local_repo xenial-backports main restricted universe multiverse >> $list_path
+	echo deb $local_repo xenial-security main restricted universe multiverse >> $list_path
+elif [ $1 == "hdd" ]; then
+	repo_path="/media/mario/MARIO_EXT/Ubuntu16.04"
+	cd $repo_path && python3 -m http.server > /dev/null 2>&1 &
+	sleep 3
+	hdd_repo='http://0.0.0.0:8000/'
+	echo Using source $hdd_repo
+	echo deb $hdd_repo xenial main restricted universe multiverse > $list_path
+	echo deb $hdd_repo xenial-updates main restricted universe multiverse >> $list_path
+elif [ $1 == "net" ]; then
+	net_repo='http://archive.ubuntu.com/ubuntu'
+	echo Using source $net_repo
+	echo deb $net_repo xenial main restricted universe multiverse > $list_path
+	echo deb $net_rep xenial-updates main restricted universe multiverse >> $list_path
+fi
+apt update
+if [ $1 == "hdd" ]; then
+	ps aux | awk '/python3 -m http.server/ { printf("kill -9 %d\n", $2) | "sh" }' > /dev/null 2>&1
+fi

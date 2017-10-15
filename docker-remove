@@ -11,7 +11,9 @@ else
     docker-filter $WHAT $PATTERN | awk -v FORCE=$FORCE -v WHAT=$WHAT '{ print "docker " WHAT " rm " FORCE " " $3 | "/bin/bash" }'
   elif [ $WHAT = container ]; then
     docker-filter $WHAT $PATTERN | awk -v FORCE=$FORCE -v WHAT=$WHAT '{ print "docker " WHAT " rm " FORCE " " $1 | "/bin/bash" }'
+  elif [ $WHAT = volume ]; then
+    docker-filter $WHAT $PATTERN | awk -v FORCE=$FORCE -v WHAT=$WHAT '{ print "docker " WHAT " rm " FORCE " " $2 | "/bin/bash" }'
   else
-    echo "Bad Usage. WHAT = { image, container }"
+    echo "Bad Usage. WHAT = { image, container, volume }"
   fi
 fi

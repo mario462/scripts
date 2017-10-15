@@ -1,0 +1,2 @@
+#!/bin/bash
+ls | awk '{ folder=$0; cmd="mv " $folder "/* /media/mario/MARIO_EXT/Youtube/" $folder; system(cmd) }'

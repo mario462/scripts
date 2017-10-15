@@ -1,0 +1,2 @@
+#! /bin/bash
+~/ruby/kewelta/elasticsearch-2.1.0/bin/elasticsearch

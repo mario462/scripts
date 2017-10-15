@@ -1,0 +1,9 @@
+#!/bin/bash
+TTY=$(echo $(tty) | sed 's/\/dev\///')
+if [ $# -eq 0 ]; then
+  ps aux|grep pts|grep sshd|grep -v $TTY
+elif [ $# -eq 1 ] && [ $1 = "remove" ]; then
+  ps aux|grep pts|grep sshd|grep -v $TTY|awk '{ cmd="sudo kill -9 "$2; system(cmd); }'
+else
+  echo "Bad usage: dangling-sessions.sh [remove]"
+fi

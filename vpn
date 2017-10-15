@@ -39,7 +39,7 @@ else:
 		args.proxy_port = ''
 		args.auth_file = ''
 	elif args.proxy == 'uh':
-		args.proxy = '10.6.100.71'
+		args.proxy = 'proxy-ext.uh.cu'
 	elif args.proxy == 'local':
 		args.proxy_type = 'socks-proxy'
 		args.proxy = '127.0.0.1'

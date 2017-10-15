@@ -1,0 +1,3 @@
+#ffprobe -i $1 -show_entries format=duration -v quiet -of csv="p=0"
+
+#ffmpeg -i $1 -b $2 reduced-$1

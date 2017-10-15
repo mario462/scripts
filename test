@@ -1,0 +1,2 @@
+CMD="ps aux"
+$CMD

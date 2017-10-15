@@ -1,0 +1,3 @@
+#! /bin/bash
+/home/mario/bin/stackoverflow-scripts/start_solr.sh &
+/home/mario/bin/stackoverflow-scripts/start_web.sh 

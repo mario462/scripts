@@ -1,0 +1,2 @@
+#!/bin/bash
+php-cs-fixer fix --dry-run --diff --level=psr2 $1

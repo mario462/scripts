@@ -1,0 +1,1 @@
+ffmpeg -i input.flv -ss 60 -t 60 -acodec copy -vcodec copy output.flv
