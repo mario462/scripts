@@ -1,9 +1,11 @@
 #!/bin/bash
 TTY=$(echo $(tty) | sed 's/\/dev\///')
-if [ $# -eq 0 ]; then
+if [ $# -eq 1 ] && [ $1 = "list" ]; then
   ps aux|grep pts|grep sshd|grep -v $TTY
-elif [ $# -eq 1 ] && [ $1 = "remove" ]; then
+elif [ $# -eq 1 ] && [ $1 = "remove-others" ]; then
   ps aux|grep pts|grep sshd|grep -v $TTY|awk '{ cmd="sudo kill -9 "$2; system(cmd); }'
+elif [ $# -eq 1 ] && [ $1 = "remove-all" ]; then
+  ps aux|grep pts|grep sshd|awk '{ cmd="sudo kill -9 "$2; system(cmd); }'
 else
-  echo "Bad usage: dangling-sessions.sh [remove]"
+  echo "Bad usage: dangling-sessions.sh {list|remove-others|remove-all}"
 fi
